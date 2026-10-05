@@ -1,4 +1,5 @@
-def input_matrix_size():
+def input_matrix_size() -> tuple[int, int]:
+    """Запросить у пользователя натуральные размеры матрицы."""
     while True:
         try:
             n = int(input("Введите число строк: "))
@@ -11,7 +12,8 @@ def input_matrix_size():
         print("Ошибка: размеры должны быть натуральными числами.")
 
 
-def matrix_init(n, m):
+def matrix_init(n: int, m: int) -> list[list[float]]:
+    """Считать матрицу размером n x m построчно."""
     matrix = []
     for i in range(n):
         while True:
@@ -27,12 +29,14 @@ def matrix_init(n, m):
     return matrix
 
 
-def matrix_print(matrix):
-    for row in matrix:
-        print(*row)
+def matrix_print(matrix: list[list[float]]) -> None:
+    """Вывести элементы матрицы по столбцам."""
+    for column in zip(*matrix):
+        print(*column)
 
 
-def main():
+def main() -> None:
+    """Запустить консольную программу."""
     n, m = input_matrix_size()
     matrix = matrix_init(n, m)
     matrix_print(matrix)
