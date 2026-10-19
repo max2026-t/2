@@ -9,5 +9,8 @@ dist/
 # Файлы окружения и кэш Python
 *.env
 venv/
+.venv/
 __pycache__/
 .pytest_cache/
+.coverage
+htmlcov/
