@@ -3,7 +3,7 @@
 from decimal import Decimal
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 API_VERSION = "1.0"
@@ -16,6 +16,14 @@ class OrderItem(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     quantity: int = Field(gt=0, le=1000)
     unit_price: Decimal = Field(gt=0, max_digits=12, decimal_places=2)
+
+    @field_validator("quantity", mode="before")
+    @classmethod
+    def reject_boolean_quantity(cls, value):
+        """Отклонить логические значения до преобразования в int."""
+        if isinstance(value, bool):
+            raise ValueError("количество должно быть целым числом")
+        return value
 
 
 class OrderRequest(BaseModel):
