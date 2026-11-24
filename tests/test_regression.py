@@ -1,5 +1,8 @@
 """Регрессионные проверки варианта 19 по таблице решений."""
 
+from pathlib import Path
+from runpy import run_path
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -75,14 +78,19 @@ def test_report_formats_money_and_count():
     )
 
 
-def test_server_entry_point(monkeypatch):
+@pytest.mark.parametrize("as_script", [False, True])
+def test_server_entry_point(monkeypatch, as_script):
     calls = []
 
     def record(app, **options):
         calls.append((app, options))
 
     monkeypatch.setattr("src.server.uvicorn.run", record)
-    main()
+    if as_script:
+        path = Path(__file__).resolve().parents[1] / "src" / "server.py"
+        run_path(str(path), run_name="__main__")
+    else:
+        main()
     assert calls == [
         ("src.api:app", {"host": "127.0.0.1", "port": 8000, "reload": False})
     ]

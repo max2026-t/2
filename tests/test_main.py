@@ -1,4 +1,8 @@
+from pathlib import Path
+from runpy import run_path
 from unittest.mock import patch
+
+import pytest
 
 from src.main import input_matrix_size, matrix_init, matrix_print
 
@@ -36,3 +40,19 @@ def test_matrix_init_retries_non_numeric_values(capsys):
     with patch("builtins.input", side_effect=["1 x", "1 2"]):
         assert matrix_init(1, 2) == [[1.0, 2.0]]
     assert "элементы должны быть числами" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("rows,columns", [(0, 0), (0, 2), (2, 0), (2, 2)])
+def test_dimension_condition_combinations(rows, columns, capsys):
+    with patch("builtins.input", side_effect=[str(rows), str(columns), "1", "3"]):
+        result = input_matrix_size()
+    valid = rows > 0 and columns > 0
+    assert result == ((rows, columns) if valid else (1, 3))
+    assert ("натуральными" in capsys.readouterr().out) is not valid
+
+
+def test_matrix_console_entry_point(capsys):
+    path = Path(__file__).resolve().parents[1] / "src" / "main.py"
+    with patch("builtins.input", side_effect=["2", "2", "1 2", "3 4"]):
+        run_path(str(path), run_name="__main__")
+    assert capsys.readouterr().out == "1.0 3.0\n2.0 4.0\n"
